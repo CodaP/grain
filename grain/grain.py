@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 VIIRS_EPOCH = datetime(1958, 1, 1)
 MODIS_EPOCH = datetime(1993, 1, 1)
 UNIX_EPOCH  = datetime(1970, 1, 1)
+NTP_EPOCH  =  datetime(1900, 1, 1)
 
 DEFAULT_EPOCH = UNIX_EPOCH
 
@@ -26,14 +27,16 @@ class Grain(object):
   """An object for parsing and utilizing the information contained in a leap second file.
   
   Initialize with a file object, ie: the result of open(...)"""
-  def __init__(self, leap_second_file=open(DEFAULT_LEAP_SECONDS)):
+  def __init__(self, leap_second_file=None):
+    if leap_second_file is None:
+        leap_second_file = open(DEFAULT_LEAP_SECONDS)
     leap_times = []
     offsets = []
     for line in leap_second_file:
       li=line.strip()
       if not li.startswith('#'):
         pieces = li.split()
-        leap_time = DEFAULT_EPOCH + timedelta(seconds=int(pieces[0]))
+        leap_time = NTP_EPOCH + timedelta(seconds=int(pieces[0]))
         leap_times.append(leap_time)
         offset = int(pieces[1])
         offsets.append(offset)
